@@ -1,0 +1,25 @@
+public Test createEnumAtRunTime() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Constructor con = Operacoes.class.getDeclaredConstructors()[0];
+        Method[] methods = con.getClass().getDeclaredMethods();
+        for (Method m : methods) {
+            if (m.getName().equals("acquireConstructorAccessor")) {
+                m.setAccessible(true);
+                m.invoke(con, new Object[0]);
+            }
+        }
+
+        Field[] fields = con.getClass().getDeclaredFields();
+        Object ca = null;
+        for (Field f : fields) {
+            if (f.getName().equals("constructorAccessor")) {
+                f.setAccessible(true);
+                ca = f.get(con);
+            }
+        }
+        Method m = ca.getClass().getMethod("newInstance", new Class[]{Object[].class});
+        m.setAccessible(true);
+        Test v = (Operacoes) m.invoke(ca, new Object[]{new Object[]{"ADD_NEW", Integer.MAX_VALUE}});
+        System.out.println(v.getClass());
+
+        return v;
+    }
